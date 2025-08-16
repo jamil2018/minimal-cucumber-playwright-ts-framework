@@ -1,6 +1,6 @@
-# Cucumber JS Minimal
+# Cucumber Playwright TS Minimal
 
-A minimal TypeScript project setup with modern development tools and linting configuration.
+A minimal cucumber js framework that utilizes playwright as its test engine and typescript as its language.
 
 ## Features
 

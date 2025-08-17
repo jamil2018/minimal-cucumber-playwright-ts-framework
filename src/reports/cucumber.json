@@ -1,0 +1,66 @@
+[
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "example;user-navigates-to-the-home-page",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "User navigates to the home page",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 134579291
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "the user navigates to \"https://practicetestautomation.com/practice-test-login/\"",
+            "match": {
+              "location": "file:/Users/hasnat/Projects/cucumber-js-minimal/src/steps/action/navigation.action.step.ts:2"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3687658874
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 5,
+            "name": "the user should see \"Test login\" in \"h2\"",
+            "match": {
+              "location": "file:/Users/hasnat/Projects/cucumber-js-minimal/src/steps/validation/text.validation.step.ts:3"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 14791250
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 17625500
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "example",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "Example",
+    "tags": [],
+    "uri": "src/features/example.feature"
+  }
+]

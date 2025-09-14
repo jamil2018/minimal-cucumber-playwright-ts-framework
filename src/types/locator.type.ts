@@ -6,3 +6,5 @@ export type LocatorMap = {
     name: string
     path: string
 }
+
+export type LocatorCollection = Record<string, Locator>

@@ -1,4 +1,5 @@
 {
     "cucumber.features": ["src/features/**/*.feature"],
-    "cucumber.glue": ["src/steps/**/*.ts"]
+    "cucumber.glue": ["src/steps/**/*.ts"],
+    "postman.settings.dotenv-detection-notification-visibility": false
 }

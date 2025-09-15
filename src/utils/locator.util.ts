@@ -1,5 +1,5 @@
 import { Page } from 'playwright'
-import { LocatorCache, LocatorMapCache } from './cache.util'
+import { LocatorCache, LocatorMapCache } from './cache.util.js'
 
 export function resolveLocator(page: Page, locatorName: string) {
     try {
@@ -17,7 +17,13 @@ export function resolveLocator(page: Page, locatorName: string) {
                 `Locator ${locatorName} not found for name ${locatorMapData.name}`
             )
         }
-        return locators
+        const locator = locators[locatorName]
+        if (!locator) {
+            throw new Error(
+                `Locator ${locatorName} not found for name ${locatorMapData.name}`
+            )
+        }
+        return locator as unknown as string
     } catch (error) {
         console.error(error)
         return null

@@ -1,5 +1,5 @@
 {
     "email": "input[placeholder='Enter your email']",
-    "password": "input[name='password']",
+    "password": "input[type='password']",
     "loginButton": "button[type='submit']"
 }

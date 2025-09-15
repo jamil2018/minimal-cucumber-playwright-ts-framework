@@ -1,9 +1,10 @@
 {
     "compilerOptions": {
         "forceConsistentCasingInFileNames": true,
-        "module": "CommonJS",
+        "module": "NodeNext",
         "target": "esnext",
-        "types": [],
+        "moduleResolution": "NodeNext",
+        "types": ["node", "playwright"],
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
@@ -12,7 +13,9 @@
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
     },
     "include": ["src/**/*.ts", "./*.ts"]
 }

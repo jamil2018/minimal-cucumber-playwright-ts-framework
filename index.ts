@@ -1,28 +1,41 @@
-import { Command } from 'commander'
+import { startCli } from './src/utils/cli.util.js'
+import type { OptionValues } from 'commander'
 
-const program = new Command()
+/**
+ * Main entry point for the CLI application
+ * Handles CLI parsing, error handling, and application lifecycle
+ */
+function bootstrap(): void {
+    try {
+        // Parse CLI arguments and get options
+        const options: OptionValues = startCli()
 
-program
-    .name('cli')
-    .description('a cli tool for running tests with different configurations')
-    .version('0.0.1')
+        // Log parsed options with better formatting
+        console.log('🚀 CLI Options parsed successfully:')
+        console.log(JSON.stringify(options, null, 2))
 
-program
-    .option(
-        '-e, --environment <environment>',
-        'the environment to run the tests on'
-    )
-    .option('-t, --tags <tags>', 'the tags to run the tests on')
-    .option(
-        '-p, --parallel <parallel>',
-        'the number of parallel workers to run the tests on'
-    )
-    .option('-b, --browser <browser>', 'the browser to run the tests on')
-    .option(
-        '-h, --headless <headless>',
-        'the headless mode to run the tests on'
-    )
-    .parse(process.argv)
+        // TODO: Add actual test execution logic here
+        console.log('✅ Application completed successfully')
+        process.exit(0)
+    } catch (error) {
+        console.error('❌ Application failed with error:')
+        console.error(
+            error instanceof Error ? error.message : 'Unknown error occurred'
+        )
+        process.exit(1)
+    }
+}
 
-const options = program.opts()
-console.log(options)
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+    console.error('❌ Uncaught Exception:', error.message)
+    process.exit(1)
+})
+
+process.on('unhandledRejection', (reason) => {
+    console.error('❌ Unhandled Rejection:', reason)
+    process.exit(1)
+})
+
+// Start the application
+bootstrap()

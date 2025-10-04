@@ -1,3 +1,4 @@
+@test
 Feature: Example
 
   Scenario: User navigates to the login page

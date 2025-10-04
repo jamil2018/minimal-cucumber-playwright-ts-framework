@@ -1,26 +1,56 @@
-import { After, Before, setDefaultTimeout } from '@cucumber/cucumber'
-import { CustomWorld } from '../config/executor/world.js'
-import { chromium, firefox, webkit } from 'playwright'
+import {
+    After,
+    AfterAll,
+    Before,
+    BeforeAll,
+    setDefaultTimeout,
+} from '@cucumber/cucumber'
+import { BrowserName, CustomWorld } from '../config/executor/world.js'
+import {
+    chromium,
+    ChromiumBrowser,
+    firefox,
+    FirefoxBrowser,
+    webkit,
+    WebKitBrowser,
+} from 'playwright'
 
-setDefaultTimeout(60000)
+let browser: ChromiumBrowser | FirefoxBrowser | WebKitBrowser
+
+BeforeAll(async function () {
+    setDefaultTimeout(60000)
+    const browserName = (process.env.BROWSER as BrowserName) || 'chromium'
+    switch (browserName) {
+        case 'chromium':
+            browser = await chromium.launch({
+                headless: process.env.HEADLESS === 'false',
+            })
+            break
+        case 'firefox':
+            browser = await firefox.launch({
+                headless: process.env.HEADLESS === 'false',
+            })
+            break
+        case 'webkit':
+            browser = await webkit.launch({
+                headless: process.env.HEADLESS === 'false',
+            })
+            break
+        default:
+            throw new Error(`Invalid browser name: ${browserName}`)
+    }
+})
 
 Before(async function (this: CustomWorld) {
-    const picker = {
-        chromium,
-        firefox,
-        webkit,
-    } as const
-
-    const launcher = picker[this.browserName] ?? chromium
-    this.browser = await launcher.launch({
-        headless: false,
-    })
-    this.context = await this.browser.newContext()
+    this.context = await browser.newContext()
     this.page = await this.context.newPage()
 })
 
 After(async function (this: CustomWorld) {
     await this.page.close()
     await this.context.close()
-    await this.browser.close()
+})
+
+AfterAll(async function () {
+    await browser.close()
 })

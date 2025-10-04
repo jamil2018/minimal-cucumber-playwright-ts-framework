@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import { globSync } from 'glob'
-import { LocatorCollection, LocatorMap } from '../types/locator.type'
+import { LocatorCollection, LocatorMap } from '../types/locator.type.js'
 import * as path from 'path'
 
 export class LocatorCache {

@@ -1,5 +1,5 @@
 import { After, Before, setDefaultTimeout } from '@cucumber/cucumber'
-import { CustomWorld } from '../config/world.js'
+import { CustomWorld } from '../config/executor/world.js'
 import { chromium, firefox, webkit } from 'playwright'
 
 setDefaultTimeout(60000)

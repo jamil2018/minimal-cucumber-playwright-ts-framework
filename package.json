@@ -9,7 +9,8 @@
         "test": "cucumber-js",
         "format": "prettier --write .",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "cli": "tsx index.ts"
     },
     "keywords": [],
     "author": "",
@@ -35,5 +36,8 @@
         "tsx": "^4.20.4",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.39.1"
+    },
+    "dependencies": {
+        "commander": "^14.0.1"
     }
 }

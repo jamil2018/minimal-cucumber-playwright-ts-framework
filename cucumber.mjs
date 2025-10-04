@@ -11,4 +11,5 @@ export default {
             `json:${process.env.REPORT_PATH ?? 'src/reports/cucumber.json'}`,
     ],
     publishQuiet: true,
+    tags: '@run or @test',
 }

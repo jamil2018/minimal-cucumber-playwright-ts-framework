@@ -1,5 +1,5 @@
 import { Then } from '@cucumber/cucumber'
-import { CustomWorld, expect } from '../../config/world.js'
+import { CustomWorld, expect } from '../../config/executor/world.js'
 
 Then(
     'the user should see {string} in {string}',

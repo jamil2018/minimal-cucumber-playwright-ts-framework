@@ -5,7 +5,9 @@ import {
     BeforeAll,
     setDefaultTimeout,
 } from '@cucumber/cucumber'
-import { BrowserName, CustomWorld } from '../config/executor/world.js'
+import { CustomWorld } from '../config/executor/world.js'
+import { BrowserName } from '../types/browser.type.js'
+import { config } from 'dotenv'
 import {
     chromium,
     ChromiumBrowser,
@@ -15,6 +17,10 @@ import {
     WebKitBrowser,
 } from 'playwright'
 
+// Load environment variables
+config()
+
+// Initialize browser
 let browser: ChromiumBrowser | FirefoxBrowser | WebKitBrowser
 
 BeforeAll(async function () {
@@ -23,17 +29,17 @@ BeforeAll(async function () {
     switch (browserName) {
         case 'chromium':
             browser = await chromium.launch({
-                headless: process.env.HEADLESS === 'false',
+                headless: process.env.HEADLESS === 'true',
             })
             break
         case 'firefox':
             browser = await firefox.launch({
-                headless: process.env.HEADLESS === 'false',
+                headless: process.env.HEADLESS === 'true',
             })
             break
         case 'webkit':
             browser = await webkit.launch({
-                headless: process.env.HEADLESS === 'false',
+                headless: process.env.HEADLESS === 'true',
             })
             break
         default:

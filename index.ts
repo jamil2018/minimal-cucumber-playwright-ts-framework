@@ -1,11 +1,15 @@
 import { startCli } from './src/utils/cli.util.js'
 import type { OptionValues } from 'commander'
+import { config } from 'dotenv'
 
 /**
  * Main entry point for the CLI application
  * Handles CLI parsing, error handling, and application lifecycle
  */
 function bootstrap(): void {
+    // Load environment variables
+    config()
+
     try {
         // Parse CLI arguments and get options
         const options: OptionValues = startCli()

@@ -2,26 +2,48 @@ import { Command, Option, OptionValues } from 'commander'
 import { getAllEnvironments } from './environment.util.js'
 import parseTagExpression from '@cucumber/tag-expressions'
 
-// Type definitions for better type safety
-interface CliOptions extends OptionValues {
+/**
+ * Configuration options for the CLI tool
+ * @extends OptionValues - Extends Commander.js OptionValues for CLI integration
+ */
+export interface CliOptions extends OptionValues {
+    /** The target environment to run tests against */
     environment: string
+    /** Optional Cucumber tag expression to filter test scenarios */
     tags?: string
+    /** Number of parallel workers to run tests with */
     parallel: number
+    /** Browser engine to use for test execution */
     browser: 'chromium' | 'firefox' | 'webkit'
+    /** Whether to run browser in headless mode */
     headless: 'true' | 'false'
 }
 
-// Constants for better maintainability
+/** Available browser choices for test execution */
 const BROWSER_CHOICES = ['chromium', 'firefox', 'webkit'] as const
+
+/** Available headless mode choices */
 const HEADLESS_CHOICES = ['true', 'false'] as const
+
+/** Default number of parallel workers */
 const DEFAULT_PARALLEL_WORKERS = 1
+
+/** Default browser engine */
 const DEFAULT_BROWSER = 'chromium'
+
+/** Default headless mode setting */
 const DEFAULT_HEADLESS = 'true'
 
-// Initialize command program
+/**
+ * Commander.js program instance for CLI argument parsing
+ * Configured with all available options and validation rules
+ */
 const program = new Command()
 
-// Load environment names with error handling
+/**
+ * Available environment names loaded from configuration
+ * Used to validate the --environment option
+ */
 let environmentNames: string[] = []
 try {
     environmentNames = Object.keys(getAllEnvironments())
@@ -37,10 +59,21 @@ try {
 }
 
 /**
- * Validates and parses a positive integer value
- * @param val - The string value to parse
+ * Validates and parses a positive integer value from command line input
+ *
+ * Used as a custom parser for the --parallel option to ensure only valid
+ * positive integers are accepted.
+ *
+ * @param val - The string value to parse from command line
  * @returns The parsed positive integer
  * @throws Error if the value is not a valid positive integer
+ *
+ * @example
+ * ```typescript
+ * parsePositiveInt("4") // Returns 4
+ * parsePositiveInt("0") // Throws Error
+ * parsePositiveInt("abc") // Throws Error
+ * ```
  */
 function parsePositiveInt(val: string): number {
     const n = Number(val)
@@ -51,10 +84,21 @@ function parsePositiveInt(val: string): number {
 }
 
 /**
- * Validates a Cucumber tag expression
+ * Validates a Cucumber tag expression for proper syntax
+ *
+ * Uses the @cucumber/tag-expressions library to validate that the provided
+ * tag expression follows Cucumber's tag expression syntax rules.
+ *
  * @param val - The tag expression string to validate
- * @returns The validated tag expression
+ * @returns The validated tag expression (unchanged if valid)
  * @throws Error if the tag expression is invalid
+ *
+ * @example
+ * ```typescript
+ * validateCucumberTagExpression('@smoke') // Returns '@smoke'
+ * validateCucumberTagExpression('@smoke and @regression') // Returns '@smoke and @regression'
+ * validateCucumberTagExpression('invalid expression') // Throws Error
+ * ```
  */
 function validateCucumberTagExpression(val: string): string {
     try {
@@ -67,7 +111,12 @@ function validateCucumberTagExpression(val: string): string {
     }
 }
 
-// Configure the CLI program
+/**
+ * Configure the Commander.js CLI program with all available options
+ *
+ * Sets up the command name, description, version, and all command line options
+ * with their respective validation rules and default values.
+ */
 program
     .name('cucumber-cli')
     .description(
@@ -109,8 +158,20 @@ program
 
 /**
  * Starts the CLI and parses command line arguments
- * @returns The parsed CLI options
+ *
+ * This is the main entry point for the CLI tool. It parses command line arguments,
+ * validates them according to the configured rules, and returns the parsed options.
+ * The function handles errors gracefully and exits the process with appropriate
+ * error codes if parsing fails.
+ *
+ * @returns The parsed and validated CLI options
  * @throws Error if parsing fails or required options are missing
+ *
+ * @example
+ * ```typescript
+ * const options = startCli();
+ * console.log(`Running tests on ${options.environment} with ${options.parallel} workers`);
+ * ```
  */
 export function startCli(): CliOptions {
     try {

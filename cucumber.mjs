@@ -7,9 +7,9 @@ export default {
     import: ['src/steps/**/*.ts', 'src/hooks/hooks.ts', 'src/config/world.ts'],
     loader: ['ts-node/esm'],
     format: [
+        'pretty',
         process.env.REPORT_FORMAT ??
             `json:${process.env.REPORT_PATH ?? 'src/reports/cucumber.json'}`,
     ],
     publishQuiet: true,
-    tags: '@run or @test',
 }

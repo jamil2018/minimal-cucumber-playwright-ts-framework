@@ -1,12 +1,12 @@
-import { spawn, ChildProcess } from 'child_process'
-import type { SpawnOptions } from 'child_process'
+import { execa, type Options as ExecaOptions } from 'execa'
+import type { ChildProcess } from 'child_process'
 import { EventEmitter } from 'events'
 
 /**
  * Configuration options for spawning child processes
- * @extends SpawnOptions - Extends Node.js SpawnOptions for additional functionality
+ * @extends ExecaOptions - Extends execa Options for additional functionality
  */
-export interface SpawnerOptions extends SpawnOptions {
+export interface SpawnerOptions extends ExecaOptions {
     /** Whether to stream logs to console (default: true) */
     streamLogs?: boolean
     /** Whether to prefix logs with process name (default: true) */
@@ -21,7 +21,7 @@ export interface SpawnerOptions extends SpawnOptions {
  * Represents a spawned child process with metadata and output tracking
  */
 export interface SpawnedProcess {
-    /** The underlying Node.js ChildProcess instance */
+    /** The underlying Node.js ChildProcess instance (returned by execa) */
     process: ChildProcess
     /** Unique name identifier for the process */
     name: string
@@ -109,10 +109,10 @@ export class TaskSpawner extends EventEmitter {
             endTime: null,
         }
 
-        // Spawn the child process
+        // Spawn the child process using execa
         // Use 'inherit' for stdio when streaming logs to preserve colors and TTY detection
         const stdioConfig = streamLogs ? 'inherit' : 'pipe'
-        const childProcess = spawn(command, args, {
+        const childProcess = execa(command, args, {
             stdio: stdioConfig,
             ...spawnOptions,
         })
@@ -248,7 +248,7 @@ export class TaskSpawner extends EventEmitter {
                 return
             }
 
-            spawnedProcess.process.on('exit', (code) => {
+            spawnedProcess.process.on('exit', (code: number | null) => {
                 resolve(code)
             })
         })

@@ -9,8 +9,8 @@ import parseTagExpression from '@cucumber/tag-expressions'
 export interface CliOptions extends OptionValues {
     /** The target environment to run tests against */
     environment: string
-    /** Optional Cucumber tag expression to filter test scenarios */
-    tags?: string
+    /** Cucumber tag expression to filter test scenarios */
+    tags: string
     /** Number of parallel workers to run tests with */
     parallel: number
     /** Browser engine to use for test execution */
@@ -131,10 +131,13 @@ program
             .choices(environmentNames)
             .makeOptionMandatory()
     )
-    .option(
-        '-t, --tags <tags>',
-        'The tags to run the tests on (Cucumber tag expression)',
-        validateCucumberTagExpression
+    .addOption(
+        new Option(
+            '-t, --tags <tags>',
+            'The tags to run the tests on (Cucumber tag expression)'
+        )
+            .argParser(validateCucumberTagExpression)
+            .makeOptionMandatory()
     )
     .option(
         '-p, --parallel <parallel>',

@@ -1,140 +1,303 @@
-# Cucumber Playwright TS Minimal
+# Cucumber Playwright TypeScript E2E Testing Framework
 
-A minimal cucumber js framework that utilizes playwright as its test engine and typescript as its language.
+A comprehensive, production-ready E2E testing framework that combines Cucumber for BDD, Playwright for browser automation, and TypeScript for type safety. This framework provides advanced features including intelligent locator management, environment configuration, parallel execution, and sophisticated process management.
 
-## Features
+## 🚀 Features
 
-- TypeScript support with hot reload using `tsx`
-- ESLint configuration for JavaScript, TypeScript, JSON, and Markdown files
-- Prettier code formatting
-- Node.js environment setup
-- **Task Spawner Utility** - Advanced child process management with logging and monitoring
+- **BDD Testing**: Cucumber.js integration with Gherkin syntax
+- **Cross-Browser Support**: Chromium, Firefox, and WebKit via Playwright
+- **TypeScript**: Full type safety and modern JavaScript features
+- **Intelligent Locator Management**: JSON-based locator storage with path mapping
+- **Environment Configuration**: Multi-environment support with JSON configuration
+- **Parallel Execution**: Run tests in parallel for faster execution
+- **Advanced Process Management**: Task spawner utility for complex test scenarios
+- **CLI Interface**: Command-line tool with comprehensive options
+- **Code Quality**: ESLint, Prettier, and TypeScript strict mode
+- **Hot Reload**: Development mode with `tsx` for instant feedback
 
-## Getting Started
+## 📋 Prerequisites
 
-### Prerequisites
+- **Node.js**: Version 18+ (LTS recommended)
+- **npm**: Version 8+ or **yarn**: Version 1.22+
+- **Git**: For version control
 
-- Node.js (latest LTS recommended)
-- npm or yarn
+## 🛠️ Installation
 
-### Installation
+1. **Clone the repository**
 
-1. Clone the repository
-2. Install dependencies:
+    ```bash
+    git clone <repository-url>
+    cd <repository-folder>
+    ```
+
+2. **Install dependencies**
+
     ```bash
     npm install
     ```
 
-## Task Spawner Utility
+3. **Verify installation**
+    ```bash
+    npm run test
+    ```
 
-The Task Spawner Utility provides advanced child process management capabilities for your E2E testing framework. It allows you to spawn, monitor, and manage multiple child processes with real-time logging and output capture.
+## 🏗️ Project Structure
 
-### Key Features
-
-- **Process Management**: Spawn, monitor, and control child processes
-- **Real-time Logging**: Stream process output to console with customizable prefixes
-- **Output Capture**: Store stdout/stderr for later analysis
-- **Concurrent Execution**: Run multiple processes simultaneously
-- **Event System**: Listen to process lifecycle events
-- **Cross-platform**: Works on Windows, macOS, and Linux
-
-### Basic Usage
-
-```typescript
-import { spawnTask, taskSpawner } from './src/utils/spawner.util'
-
-// Spawn a single process
-const process = await spawnTask(
-    'node',
-    ['-e', 'console.log("Hello World!");'],
-    {
-        streamLogs: true,
-        captureOutput: true,
-        logPrefix: 'my-process',
-    }
-)
-
-// Wait for completion
-await new Promise((resolve) => setTimeout(resolve, 1000))
+```
+minimal_e2e/
+├── src/
+│   ├── config/
+│   │   ├── cucumber/           # Cucumber configuration
+│   │   ├── environments/       # Environment configurations
+│   │   └── executor/          # World configuration
+│   ├── features/              # Gherkin feature files
+│   ├── hooks/                 # Cucumber hooks
+│   ├── locators/              # Page locators (JSON)
+│   ├── mapping/               # URL to locator mapping
+│   ├── reports/               # Test reports
+│   ├── steps/                 # Step definitions
+│   │   ├── action/           # Action steps (click, type, navigate)
+│   │   └── validation/       # Validation steps (assertions)
+│   ├── types/                # TypeScript type definitions
+│   └── utils/                # Utility functions
+├── cucumber.mjs              # Cucumber configuration
+├── index.ts                  # Main CLI entry point
+├── package.json
+└── tsconfig.json
 ```
 
-### Multiple Concurrent Processes
+## 🎯 Quick Start
+
+### Basic Test Execution
+
+```bash
+# Run all tests
+npm run cli -- --environment staging
+
+# Run with specific browser
+npm run cli -- --environment staging --browser firefox
+
+# Run in headless mode
+npm run cli -- --environment staging --headless true
+
+# Run with parallel execution
+npm run cli -- --environment staging --parallel 4
+```
+
+### Development Mode
+
+```bash
+# Start development mode with hot reload
+npm run dev
+
+# Run tests with specific tags
+npm run cli -- --environment staging --tags "@smoke"
+
+# Run tests with custom tag expression
+npm run cli -- --environment staging --tags "@smoke and @regression"
+```
+
+## 📝 Writing Tests
+
+### 1. Feature Files (Gherkin)
+
+Create feature files in `src/features/`:
+
+```gherkin
+@smoke
+Feature: User Authentication
+
+  Scenario: User can login successfully
+    Given the user navigates to "staging" environment url
+    When the user fills in the "email" field with "demo@example.com"
+    And the user fills in the "password" field with "test1234"
+    And the user clicks on "loginButton"
+    Then the user should see "Welcome to Home Page" in ".container h1"
+
+  Scenario: User sees login form
+    Given the user navigates to "https://demo-test-site-beta.vercel.app/login"
+    Then the user should see "Login" in "button[data-test-id='login-button']"
+```
+
+### 2. Step Definitions
+
+Step definitions are automatically organized in `src/steps/`:
+
+**Action Steps** (`src/steps/action/`):
+
+- `navigation.action.step.ts` - Navigation steps
+- `click.action.step.ts` - Click actions
+- `type.action.step.ts` - Input actions
+
+**Validation Steps** (`src/steps/validation/`):
+
+- `text.validation.step.ts` - Text assertions
+
+### 3. Locator Management
+
+#### Define Locators
+
+Create locator files in `src/locators/`:
+
+**`src/locators/login/user login.json`**:
+
+```json
+{
+    "email": "input[placeholder='Enter your email']",
+    "password": "input[type='password']",
+    "loginButton": "button[type='submit']"
+}
+```
+
+**`src/locators/home/home.json`**:
+
+```json
+{
+    "username": "input[name='username']",
+    "email": "input[name='email']",
+    "saveChangesButton": "button[type='submit']"
+}
+```
+
+#### Map URL Paths to Locators
+
+**`src/mapping/locator-map.json`**:
+
+```json
+[
+    {
+        "name": "user login",
+        "path": "/login"
+    },
+    {
+        "name": "home",
+        "path": "/home"
+    }
+]
+```
+
+#### Use Locators in Steps
 
 ```typescript
-import { spawnMultipleTasks } from './src/utils/spawner.util'
+// In step definitions, use locator names instead of selectors
+When(
+    'the user clicks on {string}',
+    async function (this: CustomWorld, selector: string) {
+        const locator = resolveLocator(this.page, selector)
+        await this.page.click(locator, { timeout: 10000 })
+    }
+)
+```
+
+### 4. Environment Configuration
+
+**`src/config/environments/environments.json`**:
+
+```json
+{
+    "staging": {
+        "url": "https://demo-test-site-beta.vercel.app",
+        "username": "demo@example.com",
+        "password": "test1234"
+    },
+    "production": {
+        "url": "https://production.example.com",
+        "username": "prod@example.com",
+        "password": "prod_password"
+    }
+}
+```
+
+## ⚙️ Configuration
+
+### Cucumber Configuration
+
+**`cucumber.mjs`**:
+
+```javascript
+export default {
+    paths: ['src/features/**/*.feature'],
+    import: ['src/steps/**/*.ts', 'src/hooks/hooks.ts', 'src/config/world.ts'],
+    loader: ['ts-node/esm'],
+    format: ['pretty', 'json:src/reports/cucumber.json'],
+    publishQuiet: true,
+}
+```
+
+### TypeScript Configuration
+
+**`tsconfig.json`**:
+
+```json
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "strict": true,
+        "types": ["node", "playwright"]
+    }
+}
+```
+
+## 🚀 Advanced Features
+
+### Task Spawner Utility
+
+The framework includes a sophisticated task spawner for managing test scenarios with different test configurations via the CLI:
+
+```typescript
+import {
+    spawnTask,
+    spawnMultipleTasks,
+    taskSpawner,
+} from './src/utils/spawner.util'
+
+// Spawn a single process
+const process = await spawnTask('npm', ['test'], {
+    streamLogs: true,
+    captureOutput: true,
+    logPrefix: 'test-runner',
+})
 
 // Spawn multiple processes concurrently
-const processes = await spawnMultipleTasks([
+const services = await spawnMultipleTasks([
     {
-        name: 'frontend',
-        command: 'npm',
-        args: ['run', 'dev'],
-        options: { streamLogs: true, captureOutput: true },
+        name: 'database',
+        command: 'docker',
+        args: ['run', 'postgres:latest'],
+        options: { streamLogs: true },
     },
     {
-        name: 'backend',
-        command: 'node',
-        args: ['server.js'],
-        options: { streamLogs: true, captureOutput: true },
-    },
-    {
-        name: 'tests',
+        name: 'api-server',
         command: 'npm',
-        args: ['test'],
+        args: ['run', 'start:api'],
         options: { streamLogs: true, captureOutput: true },
     },
 ])
 
-// Wait for all processes to complete
+// Wait for all processes
 await taskSpawner.waitForAll()
 ```
 
 ### Process Monitoring
 
 ```typescript
-import { taskSpawner } from './src/utils/spawner.util'
+// Monitor running processes
+const running = taskSpawner.getRunningProcesses()
+console.log(`Running processes: ${running.size}`)
 
-// Get all processes
-const allProcesses = taskSpawner.getAllProcesses()
-console.log(`Total processes: ${allProcesses.size}`)
-
-// Get running processes only
-const runningProcesses = taskSpawner.getRunningProcesses()
-console.log(`Running processes: ${runningProcesses.size}`)
-
-// Get specific process
-const process = taskSpawner.getProcess('frontend')
-if (process) {
-    console.log(`Process status: ${process.isRunning ? 'Running' : 'Stopped'}`)
-    console.log(`Exit code: ${process.exitCode}`)
-}
-```
-
-### Output Capture
-
-```typescript
-// Capture and retrieve process output
-const process = await spawnTask('node', ['-e', 'console.log("Test output");'], {
-    captureOutput: true,
-    streamLogs: false,
-})
-
-// Wait for completion
-await new Promise((resolve) => setTimeout(resolve, 1000))
-
-// Retrieve captured output
-const output = taskSpawner.getProcessOutput('node_1')
+// Get process output
+const output = taskSpawner.getProcessOutput('test-runner')
 if (output) {
-    console.log('Stdout:', output.stdout.join(''))
-    console.log('Stderr:', output.stderr.join(''))
+    console.log('STDOUT:', output.stdout.join(''))
+    console.log('STDERR:', output.stderr.join(''))
 }
 ```
 
 ### Event Handling
 
 ```typescript
-import { taskSpawner } from './src/utils/spawner.util'
-
 // Listen to process events
 taskSpawner.on('spawn', (process) => {
     console.log(`🚀 Process spawned: ${process.name}`)
@@ -144,152 +307,149 @@ taskSpawner.on('exit', ({ processName, code }) => {
     console.log(`🏁 Process exited: ${processName} with code ${code}`)
 })
 
-taskSpawner.on('stdout', ({ processName, data }) => {
-    console.log(`📤 ${processName}: ${data.trim()}`)
-})
-
-taskSpawner.on('stderr', ({ processName, data }) => {
-    console.log(`📥 ${processName}: ${data.trim()}`)
-})
-
 taskSpawner.on('error', ({ processName, error }) => {
     console.error(`❌ ${processName}: ${error.message}`)
 })
 ```
 
-### Process Control
+## 📊 CLI Usage
 
-```typescript
-import { killTask, killAllTasks, waitForTask } from './src/utils/spawner.util'
+### Available Commands
 
-// Kill a specific process
-const killed = killTask('frontend', 'SIGTERM')
-console.log(`Process killed: ${killed}`)
+```bash
+# Basic usage
+npm run cli -- --environment <env>
 
-// Kill all running processes
-killAllTasks('SIGKILL')
-
-// Wait for specific process to complete
-const exitCode = await waitForTask('backend')
-console.log(`Backend exited with code: ${exitCode}`)
+# All available options
+npm run cli -- --help
 ```
 
-### Configuration Options
+### CLI Options
 
-```typescript
-interface SpawnerOptions {
-    // Whether to stream logs to console (default: true)
-    streamLogs?: boolean
+| Option          | Short | Description                | Required | Default  |
+| --------------- | ----- | -------------------------- | -------- | -------- |
+| `--environment` | `-e`  | Target environment         | ✅       | -        |
+| `--tags`        | `-t`  | Cucumber tag expression    | ✅       | -        |
+| `--parallel`    | `-p`  | Number of parallel workers | ❌       | 1        |
+| `--browser`     | `-b`  | Browser engine             | ❌       | chromium |
+| `--headless`    | `-h`  | Headless mode              | ❌       | true     |
 
-    // Whether to prefix logs with process name (default: true)
-    prefixLogs?: boolean
+### Examples
 
-    // Custom prefix for logs (default: process name)
-    logPrefix?: string
+```bash
+# Run smoke tests in parallel
+npm run cli -- --environment staging --tags "@smoke" --parallel 4
 
-    // Whether to capture output for later retrieval (default: false)
-    captureOutput?: boolean
+# Run tests in Firefox with UI
+npm run cli -- --environment staging --browser firefox --headless false
 
-    // Standard Node.js spawn options
-    cwd?: string
-    env?: NodeJS.ProcessEnv
-    shell?: boolean
-    // ... other SpawnOptions
-}
+# Run regression tests
+npm run cli -- --environment production --tags "@regression" --parallel 2
 ```
 
-### Advanced Usage Examples
+## 🔧 Development
 
-#### Running E2E Tests with Multiple Services
+### Available Scripts
 
-```typescript
-import { spawnMultipleTasks, taskSpawner } from './src/utils/spawner.util'
+```bash
+# Development with hot reload
+npm run dev
 
-async function runE2ETests() {
-    // Start required services
-    const services = await spawnMultipleTasks([
-        {
-            name: 'database',
-            command: 'docker',
-            args: ['run', 'postgres:latest'],
-            options: { streamLogs: true },
-        },
-        {
-            name: 'api-server',
-            command: 'npm',
-            args: ['run', 'start:api'],
-            options: { streamLogs: true, captureOutput: true },
-        },
-        {
-            name: 'frontend',
-            command: 'npm',
-            args: ['run', 'start:frontend'],
-            options: { streamLogs: true, captureOutput: true },
-        },
-    ])
+# Run tests
+npm run test
 
-    // Wait for services to be ready
-    await new Promise((resolve) => setTimeout(resolve, 5000))
+# Lint code
+npm run lint
 
-    // Run tests
-    const testProcess = await spawnTask('npm', ['test'], {
-        streamLogs: true,
-        captureOutput: true,
-        logPrefix: 'e2e-tests',
-    })
+# Fix linting issues
+npm run lint:fix
 
-    // Wait for tests to complete
-    await taskSpawner.waitForProcess('e2e-tests')
+# Format code
+npm run format
 
-    // Clean up services
-    taskSpawner.killAll()
-}
+# Run CLI
+npm run cli
 ```
 
-#### Monitoring Long-running Processes
+### Code Quality
 
-```typescript
-import { taskSpawner } from './src/utils/spawner.util'
+The project includes comprehensive code quality tools:
 
-async function monitorProcesses() {
-    // Set up monitoring
-    const interval = setInterval(() => {
-        const running = taskSpawner.getRunningProcesses()
-        console.log(`Currently running: ${running.size} processes`)
+- **ESLint**: JavaScript, TypeScript, JSON, and Markdown linting
+- **Prettier**: Code formatting
+- **TypeScript**: Strict type checking
+- **Husky**: Git hooks (if configured)
 
-        running.forEach((process, name) => {
-            const duration = Date.now() - process.startTime.getTime()
-            console.log(`${name}: Running for ${Math.round(duration / 1000)}s`)
-        })
-    }, 5000)
+## 🧪 Testing Strategy
 
-    // Your process spawning code here...
+### Test Organization
 
-    // Clean up monitoring
-    setTimeout(() => {
-        clearInterval(interval)
-    }, 60000)
-}
+1. **Feature Files**: High-level test scenarios in Gherkin
+2. **Step Definitions**: Reusable step implementations
+3. **Locators**: Centralized element selectors
+4. **Environments**: Configuration for different test environments
+5. **Hooks**: Setup and teardown logic
+
+### Best Practices
+
+1. **Use Locator Repository Pattern**: Organize locators by page/component
+2. **Environment-Specific Data**: Store test data in environment configs
+3. **Reusable Steps**: Create generic, reusable step definitions
+4. **Proper Tagging**: Use meaningful tags for test categorization
+5. **Parallel Execution**: Leverage parallel execution for faster feedback
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Browser Installation**: Ensure Playwright browsers are installed
+
+    ```bash
+    npx playwright install
+    ```
+
+2. **Environment Configuration**: Verify environment files exist and are valid JSON
+
+3. **Locator Resolution**: Check that locator mappings match actual URL paths
+
+4. **TypeScript Errors**: Ensure all imports use `.js` extensions for ES modules
+
+## 📈 Performance
+
+### Parallel Execution
+
+```bash
+# Run tests in parallel (adjust based on your system)
+npm run cli -- --environment staging --parallel 4
 ```
 
-### Utility Functions
+### Headless Mode
 
-The spawner utility exports several convenience functions:
+```bash
+# Faster execution in headless mode
+npm run cli -- --environment staging --headless true
+```
 
-- `spawnTask(command, args, options)` - Spawn a single process
-- `spawnMultipleTasks(tasks)` - Spawn multiple processes concurrently
-- `killTask(processName, signal)` - Kill a specific process
-- `killAllTasks(signal)` - Kill all running processes
-- `waitForTask(processName)` - Wait for a specific process to complete
-- `waitForAllTasks()` - Wait for all processes to complete
+## 🤝 Contributing
 
-### Error Handling
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
-The spawner utility includes comprehensive error handling:
+## 📄 License
 
-- Process spawn errors are caught and emitted as events
-- Uncaught exceptions in child processes are handled gracefully
-- Process exit codes are tracked and available
-- Error events include process name and error details
+This project is licensed under the ISC License.
 
-This utility is perfect for managing complex E2E test scenarios that require multiple services, background processes, or concurrent operations.
+## 🆘 Support
+
+For issues and questions:
+
+1. Check the troubleshooting section
+2. Review existing issues
+3. Create a new issue with detailed information
+
+---
+
+**Happy Testing! 🎉**
